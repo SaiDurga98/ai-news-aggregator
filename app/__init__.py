@@ -1,0 +1,1 @@
+"""AI news aggregator: ingest sources, store articles, send a daily digest."""
