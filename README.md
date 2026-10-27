@@ -17,7 +17,7 @@ This repo currently has the app layout, SQLAlchemy models, and a local Postgres 
 ```text
 app/
   agents/            # LLM digest agents (next)
-  scrapers/          # YouTube RSS, oEmbed, transcripts
+  scrapers/          # YouTube + OpenAI news (RSS + article HTML)
   services/          # public functions other code should call
   models.py
   database.py
@@ -35,6 +35,40 @@ uv run python main.py youtube transcript dQw4w9WgXcQ
 ```
 
 Call `app.services.youtube.get_channel_videos`, `get_video`, and `get_transcript` with a raw ID or a full YouTube URL. Channel listings try the public RSS feed first, then the channel videos page if RSS is down. Transcripts use `youtube-transcript-api`.
+
+OpenAI news: `OpenAIScraper` reads `https://openai.com/news/rss.xml` via feedparser (title, description, url, guid, date).
+
+```bash
+uv run python main.py openai articles --hours 24
+uv run python main.py openai articles --hours 48
+```
+
+Service entry point: `app.services.openai_news.get_openai_articles(hours=24)`.
+
+Anthropic news lives at [anthropic.com/news](https://www.anthropic.com/news). There is **no official RSS** on `anthropic.com` today, so `AnthropicScraper` reads a public mirror feed (see `ANTHROPIC_NEWS_RSS_URL` in `app/scrapers/anthropic_news.py`). You can pass a different `rss_url` to the class if you host your own feed later.
+
+```bash
+uv run python main.py anthropic articles --hours 48
+```
+
+## Monitor config + runner
+
+YouTube channels to watch live in `config/monitor.json` (list of channel IDs). OpenAI and Anthropic are always included; no extra config.
+
+```json
+{
+  "youtube_channels": ["UCn8ujwUInbJkBhffxqAPBVQ"]
+}
+```
+
+Kick off everything for the last 24 hours (default):
+
+```bash
+uv run python main.py run
+uv run python main.py run --hours 48
+```
+
+Code entry point: `app.runner.run_collection(hours=24)`.
 
 ## Run locally
 

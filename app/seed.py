@@ -7,7 +7,13 @@ INITIAL_SOURCES: list[dict] = [
     {
         "name": "OpenAI Blog",
         "type": SourceType.BLOG,
-        "url": "https://openai.com/news/",
+        "url": "https://openai.com/news/rss.xml",
+        "identifier": None,
+    },
+    {
+        "name": "Anthropic News",
+        "type": SourceType.BLOG,
+        "url": "https://www.anthropic.com/news",
         "identifier": None,
     },
     {
